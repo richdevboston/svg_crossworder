@@ -23,7 +23,7 @@ stylestring = """
     </style>
     </defs>"""
 def translate(coords, offset):
-    return map(sum,zip(coords,offset))
+    return list(map(sum,list(zip(coords,offset))))
 
 def make_cell(col, row, color, text=None, number=None):
     cell = etree.Element("g")
@@ -57,7 +57,7 @@ def make_cell(col, row, color, text=None, number=None):
 
 def vertices(row, col):
     order = ((0, 0), (0, 1), (1, 1), (1, 0))
-    vertices = map (lambda (x,y): ((row + x) * size, (col + y) * size), order)
+    vertices = [((row + x_y[0]) * size, (col + x_y[1]) * size) for x_y in order]
     return ' '.join(["%s,%s" % vertex for vertex in vertices])
 
 def is_start_of_word(lines, i, j):
@@ -106,9 +106,9 @@ def generate(words, geometry, save_to):
     import sys
     import random
     
-    (w,h) = map(int,geometry.split("x"))
+    (w,h) = list(map(int,geometry.split("x")))
     board = []
-    for i in xrange(0,h):
+    for i in range(0,h):
         board.append("*" * w)
 
     # random!
@@ -123,12 +123,12 @@ def generate(words, geometry, save_to):
 
         # potential places with contact
         places = []
-        for i in xrange(0,h):
-            for j in xrange(0,w):
+        for i in range(0,h):
+            for j in range(0,w):
                 if first:
                     places.append( (i,j) )
                 elif board[i][j] in word:
-                    for p in xrange(0, len(word)):
+                    for p in range(0, len(word)):
                         if word[p] == board[i][j]:
                             #print >>sys.stderr, i, j, p, word[p]
                             if i-p >=0:
@@ -162,7 +162,7 @@ def generate(words, geometry, save_to):
             has_contact = False
 
             if dir == "V":
-                for p in xrange(0, len(word)):
+                for p in range(0, len(word)):
                     if p == 0 and x > 0 and board_copy[x-1][y] != '*':
                         found_error = True
                         break
@@ -190,7 +190,7 @@ def generate(words, geometry, save_to):
                     x += 1
 
             if dir == "H":
-                for p in xrange(0, len(word)):
+                for p in range(0, len(word)):
                     if p == 0 and y > 0 and board_copy[x][y-1] != '*':
                         found_error = True
                         break
@@ -230,11 +230,11 @@ def generate(words, geometry, save_to):
             first = False
 
     if words:
-        print >>sys.stderr, "words remaining: ", words
+        print("words remaining: ", words, file=sys.stderr)
     
     if save_to:
         with open(save_to,"w") as f:
-            f.write("\n".join(map(lambda x:"".join(x),board))+"\n")
+            f.write("\n".join(["".join(x) for x in board])+"\n")
             
     return board
             
@@ -251,5 +251,5 @@ if __name__ == '__main__':
     if args.generate:
         lines = generate(lines, args.generate, args.save_generated)
     svg = create_svg(lines)
-    print etree.tostring(svg, encoding='iso-8859-1')
+    print(etree.tostring(svg, encoding="unicode"))
 
