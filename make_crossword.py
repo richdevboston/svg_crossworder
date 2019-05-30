@@ -57,7 +57,7 @@ def make_cell(col, row, color, text=None, number=None):
 
 def vertices(row, col):
     order = ((0, 0), (0, 1), (1, 1), (1, 0))
-    vertices = map (lambda (x,y): ((row + x) * size, (col + y) * size), order)
+    vertices = map (lambda x, y: ((row + x) * size, (col + y) * size), order)
     return ' '.join(["%s,%s" % vertex for vertex in vertices])
 
 def is_start_of_word(lines, i, j):
